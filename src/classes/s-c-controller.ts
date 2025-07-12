@@ -325,19 +325,17 @@ export default class SCController {
      * Adds the calendar button to the token button list
      * @param controls
      */
-    public getSceneControlButtons(controls: any[]) {
+    public getSceneControlButtons(controls: any) {
         if (canUser((<Game>game).user, this.globalConfiguration.permissions.viewCalendar)) {
-            const tokenControls = controls.find((c) => {
-                return c.name === "notes";
-            });
+            const tokenControls = controls.notes;
             if (tokenControls && Object.prototype.hasOwnProperty.call(tokenControls, "tools")) {
-                tokenControls.tools.push({
+                tokenControls.tools.calendar = {
                     name: "calendar",
                     title: "FSC.Title",
                     icon: "fas fa-calendar simple-calendar-icon",
                     button: true,
                     onClick: MainApplication.sceneControlButtonClick.bind(MainApplication)
-                });
+                };
             }
         }
     }
@@ -345,10 +343,10 @@ export default class SCController {
     /**
      * Checks settings to see if the note directory should be shown or hidden from the journal directory
      */
-    public async renderJournalDirectory(tab: JournalDirectory, jquery: JQuery) {
+    public async renderJournalDirectory(tab: JournalDirectory, element: HTMLElement) {
         await NManager.createJournalDirectory();
         if (!this.globalConfiguration.showNotesFolder && NManager.noteDirectory) {
-            const folder = jquery.find(`.folder[data-folder-id='${NManager.noteDirectory.id}']`);
+            const folder = element.querySelector(`.folder[data-folder-id='${NManager.noteDirectory.id}']`);
             if (folder) {
                 folder.remove();
             }
@@ -358,9 +356,9 @@ export default class SCController {
     /**
      * Checks settings to see if the note directory should be shown or hidden from the journal sheet directory dropdown
      */
-    public renderJournalSheet(sheet: JournalSheet, jquery: JQuery) {
+    public renderJournalSheet(sheet: JournalSheet, element: HTMLElement) {
         if (!this.globalConfiguration.showNotesFolder && NManager.noteDirectory) {
-            const option = jquery.find(`option[value='${NManager.noteDirectory.id}']`);
+            const option = element.querySelector(`option[value='${NManager.noteDirectory.id}']`);
             if (option) {
                 option.remove();
             }
@@ -373,7 +371,7 @@ export default class SCController {
      * @param jquery
      * @param data
      */
-    public renderSceneConfig(config: SceneConfig, jquery: JQuery, data: SceneConfig.Data) {
+    public renderSceneConfig(config: SceneConfig, element: HTMLElement, data: SceneConfig.Data) {
         if (!this.globalConfiguration.showNotesFolder && data.journals) {
             for (let i = 0; i < data.journals.length; i++) {
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -384,7 +382,7 @@ export default class SCController {
                     if (nd) {
                         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                         //@ts-ignore
-                        const option = jquery.find(`option[value='${data.journals[i].id}']`);
+                        const option = element.querySelector(`option[value='${data.journals[i].id}']`);
                         if (option) {
                             option.remove();
                         }
