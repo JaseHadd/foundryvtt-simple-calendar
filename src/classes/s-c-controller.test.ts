@@ -292,28 +292,24 @@ describe("SCController Tests", () => {
     });
 
     test("Get Scene Control Buttons", () => {
-        const controls: any[] = [{ name: "test", tools: [] }];
+        // Foundry 13 uses an object instead of an array for controls and tools
+
+        const controls: any = { test: { name: 'test', tools: {} }};
         const canUserSpy = jest.spyOn(PermUtils, "canUser").mockReturnValue(true);
+
         SC.getSceneControlButtons(controls);
-        expect(controls.length).toBe(1);
-        expect(controls[0].tools.length).toBe(0);
+        expect(controls.test.tools).toEqual({});
+        controls.notes = { name: "notes", tools: {} };
         SC.getSceneControlButtons(controls);
-        expect(controls.length).toBe(1);
-        expect(controls[0].tools.length).toBe(0);
-        controls.push({ name: "notes" });
+        controls.notes.tools = {};
         SC.getSceneControlButtons(controls);
-        expect(controls.length).toBe(2);
-        expect(controls[0].tools.length).toBe(0);
-        controls[1].tools = [];
-        SC.getSceneControlButtons(controls);
-        expect(controls.length).toBe(2);
-        expect(controls[0].tools.length).toBe(0);
-        expect(controls[1].tools.length).toBe(1);
+        expect(controls.test.tools).toEqual({});
+        expect(controls.notes.tools.calendar).toBeDefined();
     });
 
     test("Render Journal Directory", async () => {
         const mockQuery = {
-            find: jest.fn()
+            querySelector: jest.fn()
         };
         const mockFindResult = { remove: jest.fn() };
         jest.spyOn(NManager, "createJournalDirectory").mockImplementation(async () => {});
@@ -321,51 +317,51 @@ describe("SCController Tests", () => {
         //@ts-ignore
         await SC.renderJournalDirectory(null, mockQuery);
         expect(NManager.createJournalDirectory).toHaveBeenCalledTimes(1);
-        expect(mockQuery.find).not.toHaveBeenCalled();
+        expect(mockQuery.querySelector).not.toHaveBeenCalled();
 
         //@ts-ignore
         NManager.noteDirectory = { id: "" };
         //@ts-ignore
         await SC.renderJournalDirectory(null, mockQuery);
         expect(NManager.createJournalDirectory).toHaveBeenCalledTimes(2);
-        expect(mockQuery.find).toHaveBeenCalledTimes(1);
+        expect(mockQuery.querySelector).toHaveBeenCalledTimes(1);
 
-        mockQuery.find.mockReturnValueOnce(mockFindResult);
+        mockQuery.querySelector.mockReturnValueOnce(mockFindResult);
         //@ts-ignore
         await SC.renderJournalDirectory(null, mockQuery);
         expect(NManager.createJournalDirectory).toHaveBeenCalledTimes(3);
-        expect(mockQuery.find).toHaveBeenCalledTimes(2);
+        expect(mockQuery.querySelector).toHaveBeenCalledTimes(2);
         expect(mockFindResult.remove).toHaveBeenCalledTimes(1);
     });
 
     test("Render Journal Sheet", () => {
         const mockQuery = {
-            find: jest.fn()
+            querySelector: jest.fn()
         };
         const mockFindResult = { remove: jest.fn() };
         //@ts-ignore
         SC.renderJournalSheet(null, mockQuery);
-        expect(mockQuery.find).not.toHaveBeenCalled();
+        expect(mockQuery.querySelector).not.toHaveBeenCalled();
         //@ts-ignore
         NManager.noteDirectory = { id: "" };
 
         //@ts-ignore
         SC.renderJournalSheet(null, mockQuery);
-        expect(mockQuery.find).toHaveBeenCalledTimes(1);
+        expect(mockQuery.querySelector).toHaveBeenCalledTimes(1);
 
-        mockQuery.find.mockReturnValueOnce(mockFindResult);
+        mockQuery.querySelector.mockReturnValueOnce(mockFindResult);
         //@ts-ignore
         SC.renderJournalSheet(null, mockQuery);
-        expect(mockQuery.find).toHaveBeenCalledTimes(2);
+        expect(mockQuery.querySelector).toHaveBeenCalledTimes(2);
         expect(mockFindResult.remove).toHaveBeenCalledTimes(1);
     });
 
     test("Render Scene Config", () => {
         const mockQuery = {
-            find: jest.fn()
+            querySelector: jest.fn()
         };
         const mockFindResult = { remove: jest.fn() };
-        mockQuery.find.mockReturnValue(mockFindResult);
+        mockQuery.querySelector.mockReturnValue(mockFindResult);
 
         //@ts-ignore
         SC.renderSceneConfig({}, mockQuery, { journals: [{ id: "asd", name: "asd" }] });
