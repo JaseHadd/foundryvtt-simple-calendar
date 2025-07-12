@@ -13,11 +13,11 @@
 			"ko-fi": "vigorator"
 		}
 	],
-	"minimumCoreVersion": "10",
-	"compatibleCoreVersion": "12",
+	"minimumCoreVersion": "13",
+	"compatibleCoreVersion": "13",
 	"compatibility": {
-		"minimum": "10",
-		"verified": "12"
+		"minimum": "13",
+		"verified": "13"
 	},
 	"url": "https://github.com/vigoren/foundryvtt-simple-calendar",
 	"bugs": "https://github.com/vigoren/foundryvtt-simple-calendar/issues",
